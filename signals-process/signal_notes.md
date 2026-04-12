@@ -34,8 +34,5 @@ source venv310/bin/activate
 pip install --upgrade pip
 pip install torch demucs torchcodec
 
-pip uninstall torchcodec -y
-pip install soundfile
-
 pip install torchaudio==2.1.2
 pip install "numpy<2"
