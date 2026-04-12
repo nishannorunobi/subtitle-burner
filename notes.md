@@ -9,8 +9,11 @@ type >> python -m venv mypyvm
 
 # Add git ignore.
 
-
+# To start vm
 Type >> source mypyvm/bin/activate
+
+# To stop
+Type >> deactivate
 
 # If you wanna install dependencies from requirements.txt,
 # Run the following
