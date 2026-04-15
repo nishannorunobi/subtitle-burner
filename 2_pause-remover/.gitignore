@@ -1,3 +1,7 @@
+mypyvm
 venv310
-vocals.wav
-no-pause.wav
+.env
+*.mp3
+*.wav
+*.srt
+
