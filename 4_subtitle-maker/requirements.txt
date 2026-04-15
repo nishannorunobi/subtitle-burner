@@ -1,0 +1,6 @@
+# subtitle-generator.py
+openai>=1.0.0
+
+# System dependencies (install separately — see subtitle-notes.md):
+#   - ffmpeg       (for subtitle-embeder.py)
+#   - fonts-noto   (for Bangla script rendering)

@@ -1,0 +1,64 @@
+from openai import OpenAI
+import argparse
+import os
+import sys
+
+# --- Constants ---
+WHISPER_MODEL    = "whisper-1"
+RESPONSE_FORMAT  = "srt"
+OUTPUT_EXTENSION = ".srt"
+DEFAULT_INPUT    = "../3_media-converters/no-pause.mp4"
+DEFAULT_OUTPUT   = "bangla_subtitles.srt"
+API_KEY_ENV_VAR  = "OPENAI_API_KEY"
+
+
+def audio_to_srt(audio_path, output_path):
+    api_key = os.environ.get(API_KEY_ENV_VAR)
+    if not api_key:
+        print(f"Error: {API_KEY_ENV_VAR} environment variable is not set.")
+        sys.exit(1)
+
+    client = OpenAI(api_key=api_key)
+
+    print(f"Uploading: {audio_path}")
+    with open(audio_path, "rb") as audio_file:
+        response = client.audio.transcriptions.create(
+            model=WHISPER_MODEL,
+            file=audio_file,
+            response_format=RESPONSE_FORMAT,
+        )
+
+    srt_content = response if isinstance(response, str) else response.text
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(srt_content)
+
+    print(f"Saved: {output_path}")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Generate Bangla SRT subtitle file from audio using OpenAI Whisper."
+    )
+    parser.add_argument(
+        "audio",
+        nargs="?",
+        default=DEFAULT_INPUT,
+        help=f"Input audio file (default: {DEFAULT_INPUT})",
+    )
+    parser.add_argument(
+        "--output",
+        default=DEFAULT_OUTPUT,
+        help=f"Output SRT file (default: {DEFAULT_OUTPUT})",
+    )
+    args = parser.parse_args()
+
+    if not os.path.exists(args.audio):
+        print(f"Error: audio file not found: {args.audio}")
+        sys.exit(1)
+
+    audio_to_srt(args.audio, args.output)
+
+
+if __name__ == "__main__":
+    main()

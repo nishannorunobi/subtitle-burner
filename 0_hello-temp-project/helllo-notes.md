@@ -1,3 +1,9 @@
+
+python3.10 -m venv venv310
+source venv310/bin/activate
+
+which python
+
 # Run hello.py
 open terminal
 Type >> python hello.py
