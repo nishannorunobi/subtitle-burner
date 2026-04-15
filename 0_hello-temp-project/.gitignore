@@ -2,6 +2,7 @@ mypyvm
 venv310
 .env
 *.mp3
+*.mp4
 *.wav
 *.srt
 temp.md
