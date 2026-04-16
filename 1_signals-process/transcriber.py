@@ -2,10 +2,10 @@ import subprocess
 import os
 
 # --- Constants ---
-DEFAULT_INPUT  = "mymusic.mp3"
-DEMUCS_MODEL   = "htdemucs"
+DEFAULT_INPUT  = "../git-ignore-files/mymusic.mp4"
+DEMUCS_MODEL   = "no-vocals"
 STEM_TYPE      = "vocals"
-OUTPUT_DIR     = "separated_results"
+OUTPUT_DIR     = "../git-ignore-files/"
 
 
 def separate_vocals(audio_file):
