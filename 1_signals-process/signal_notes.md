@@ -1,3 +1,5 @@
+# Preparing the venv takes time approx 20mins
+
 1. The Strategy: Masking the SpectrogramMost ML models don't look at the raw array of PCM integers directly. Instead, they convert that 5-second array into a Spectrogram—a visual "heat map" of frequencies over time.The ML model (usually a U-Net or Transformer architecture) acts like a highly advanced highlighter. It looks at the complex "mess" of the full song's spectrogram and predicts a Vocal Mask.The Mask: A map of which "pixels" in the spectrogram belong to a human voice.The Extraction: The model multiplies the original spectrogram by this mask, effectively "muting" everything except the human voice.
 
 2. Popular ML Tools to Use
@@ -16,8 +18,7 @@ sudo pacman -S ffmpeg python-pip
 pip install demucs
 pip install torchcodec
 
-# Run the program
-python transcriber.py
+
 
 
 # Troubleshoots
@@ -36,3 +37,10 @@ pip install torch demucs torchcodec
 
 pip install torchaudio==2.1.2
 pip install "numpy<2"
+
+
+# Run the program
+python 1_vocal-seperator.py
+
+
+pip3 freeze > requirements.txt
