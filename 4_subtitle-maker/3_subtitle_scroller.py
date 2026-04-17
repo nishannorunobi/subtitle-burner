@@ -2,12 +2,20 @@ import re
 import subprocess
 import os
 import sys
+import configparser
 
-# --- Constants ---
-DEFAULT_INPUT_MP4  = "../git-ignore-files/2_2_2_no_pause.mp4"
-DEFAULT_LYRICS_TXT = "../git-ignore-files/lyrics.txt"
+def load_config(config_path="../5_content_creator/config.properties"):
+    config = configparser.ConfigParser()
+    with open(config_path) as f:
+        config.read_string("[DEFAULT]\n" + f.read())
+    return config["DEFAULT"]
+
+_cfg = load_config()
+
+DEFAULT_INPUT_MP4  = _cfg["filelocation.ready4sub"] + _cfg["prefix.ready4sub"] + _cfg["filename.original"] + "." + _cfg["extention.ready4sub.file"]
+DEFAULT_LYRICS_TXT = _cfg["filelocation.lyrics"]    + _cfg["prefix.lyrics"]    + "." + _cfg["extention.lyrics"]
+DEFAULT_OUTPUT_MP4 = _cfg["filelocation.ready2up"]  + _cfg["prefix.ready2up"]  + _cfg["filename.original"] + "." + _cfg["extention.ready2up"]
 DEFAULT_OUTPUT_ASS = "scroll.ass"
-DEFAULT_OUTPUT_MP4 = "../git-ignore-files/4_3_4_scroll_sub.mp4"
 
 # Video
 VIDEO_CODEC   = "libx264"
@@ -25,9 +33,10 @@ ITALIC        = "-1"
 OUTLINE_WIDTH = "2"
 
 # Scroll layout
-PLAY_RES_X  = 1280
-PLAY_RES_Y  = 720
-LINE_HEIGHT = 80    # approx pixel height per line at FONT_SIZE 60
+PLAY_RES_X         = 1280
+PLAY_RES_Y         = 720
+LINE_HEIGHT        = 80    # approx pixel height per line at FONT_SIZE 60
+SCROLL_SPEED_FACTOR = 0.6  # < 1.0 = slower, > 1.0 = faster
 
 
 TIMESTAMP_RE = re.compile(
@@ -79,7 +88,7 @@ def write_scroll_ass(lines, ass_path, start_time, end_time):
 
     # Speed chosen so all lines scroll continuously across available time
     # Total scroll distance = screen height + all lines stacked
-    speed         = (PLAY_RES_Y + n * LINE_HEIGHT) / available
+    speed         = (PLAY_RES_Y + n * LINE_HEIGHT) / available * SCROLL_SPEED_FACTOR
     traverse_time = (PLAY_RES_Y + LINE_HEIGHT) / speed
     spacing       = LINE_HEIGHT / speed
 

@@ -3,10 +3,18 @@ import tempfile
 import re
 import os
 import sys
+import configparser
 
-# --- Constants ---
-DEFAULT_INPUT      = "../git-ignore-files/1_1_1_vocals.mp4"
-DEFAULT_OUTPUT     = "../git-ignore-files/2_2_2_no_pause.mp4"
+def load_config(config_path="../5_content_creator/config.properties"):
+    config = configparser.ConfigParser()
+    with open(config_path) as f:
+        config.read_string("[DEFAULT]\n" + f.read())
+    return config["DEFAULT"]
+
+_cfg = load_config()
+
+DEFAULT_INPUT  = _cfg["filelocation.vocals"] + _cfg["prefix.vocals"] + _cfg["filename.original"] + "." + _cfg["extention.vocals.file"]
+DEFAULT_OUTPUT = _cfg["filelocation.ready4sub"] + _cfg["prefix.ready4sub"] + _cfg["filename.original"] + "." + _cfg["extention.ready4sub.file"]
 MAX_PAUSE_SEC      = 3.0        # remove pauses longer than this (seconds)
 SILENCE_THRESH_DB  = -40        # volume below which is considered silence
 VIDEO_CODEC        = "libx264"

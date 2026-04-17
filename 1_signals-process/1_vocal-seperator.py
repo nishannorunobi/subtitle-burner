@@ -1,10 +1,18 @@
 import subprocess
 import os
 import sys
+import configparser
 
-# --- Constants ---
-DEFAULT_INPUT    = "../git-ignore-files/0_0_0_original_music.mp4"
-DEFAULT_OUTPUT   = "../git-ignore-files/1_1_1_vocals.mp4"
+def load_config(config_path="../5_content_creator/config.properties"):
+    config = configparser.ConfigParser()
+    with open(config_path) as f:
+        config.read_string("[DEFAULT]\n" + f.read())
+    return config["DEFAULT"]
+
+_cfg = load_config()
+
+DEFAULT_INPUT  = _cfg["filelocation.original"] + _cfg["filename.original"] + "." + _cfg["extention.original"]
+DEFAULT_OUTPUT = _cfg["filelocation.vocals"] + _cfg["prefix.vocals"] + _cfg["filename.original"] + "." + _cfg["extention.vocals.file"]
 DEMUCS_MODEL     = "htdemucs"
 STEM_TYPE        = "vocals"
 TEMP_DIR         = "../git-ignore-files/demucs_temp"
