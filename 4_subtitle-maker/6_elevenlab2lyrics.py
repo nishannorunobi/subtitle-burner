@@ -71,8 +71,6 @@ def convert(input_path, output_path):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     with open(output_path, "w", encoding="utf-8") as f:
-        f.write(sentences[0]["timestamp"] + "\n")
-
         for i, s in enumerate(sentences):
             f.write(s["text"] + "\n")
             if i < len(sentences) - 1:
@@ -80,13 +78,11 @@ def convert(input_path, output_path):
                 if gap > GAP_THRESHOLD:
                     f.write("\n")
 
-        f.write(sentences[-1]["timestamp"] + "\n")
-
     print(f"Saved {len(sentences)} lines -> {output_path}")
 
 
 if __name__ == "__main__":
     _cfg = load_config()
-    DEFAULT_INPUT  = _cfg["filelocation.elevenlab"] + _cfg["prefix.elevenlab"] + "." + _cfg["extention.elevenlab.file"]
+    DEFAULT_INPUT  = _cfg["filelocation.elevenlab"] + _cfg["prefix.elevenlab"] + "." + _cfg["extention.elevenlab"]
     DEFAULT_OUTPUT = _cfg["filelocation.lyrics"]    + _cfg["prefix.lyrics"]    + "." + _cfg["extention.lyrics"]
     convert(DEFAULT_INPUT, DEFAULT_OUTPUT)

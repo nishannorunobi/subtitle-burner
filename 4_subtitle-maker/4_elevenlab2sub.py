@@ -78,6 +78,6 @@ def convert(input_path, output_path):
 
 if __name__ == "__main__":
     _cfg = load_config()
-    DEFAULT_INPUT  = _cfg["filelocation.elevenlab"] + _cfg["prefix.elevenlab"] + "." + _cfg["extention.elevenlab.file"]
-    DEFAULT_OUTPUT = _cfg["filelocation.elevenlab2sub"] + _cfg["prefix.elevenlab2sub"] + "." + _cfg["extention.elevenlab2sub.file"]
+    DEFAULT_INPUT  = _cfg["filelocation.elevenlab"] + _cfg["prefix.elevenlab"] + "." + _cfg["extention.elevenlab"]
+    DEFAULT_OUTPUT = _cfg["filelocation.elevenlab2sub"] + _cfg["prefix.elevenlab2sub"] + "." + _cfg["extention.elevenlab2sub"]
     convert(DEFAULT_INPUT, DEFAULT_OUTPUT)

@@ -11,8 +11,8 @@ def load_config(config_path="../5_content_creator/config.properties"):
 
 _cfg = load_config()
 
-DEFAULT_INPUT  = _cfg["filelocation.original"] + _cfg["filename.original"] + "." + _cfg["extention.original"]
-DEFAULT_OUTPUT = _cfg["filelocation.vocals"] + _cfg["prefix.vocals"] + _cfg["filename.original"] + "." + _cfg["extention.vocals.file"]
+DEFAULT_INPUT  = _cfg["filelocation.processing"] + _cfg["filename.processing"] + "." + _cfg["extention.processing"]
+DEFAULT_OUTPUT = _cfg["filelocation.vocals"] + _cfg["prefix.vocals"] + "." + _cfg["extention.vocals"]
 DEMUCS_MODEL     = "htdemucs"
 STEM_TYPE        = "vocals"
 TEMP_DIR         = "../git-ignore-files/demucs_temp"
@@ -31,7 +31,6 @@ def extract_vocals(input_path, output_path):
 
     os.makedirs(TEMP_DIR, exist_ok=True)
 
-    # Step 1 — separate vocals using demucs
     print(f"Extracting vocals from {input_path}...")
     subprocess.run([
         "demucs",
@@ -41,7 +40,6 @@ def extract_vocals(input_path, output_path):
         input_path,
     ], check=True)
 
-    # Step 2 — locate the vocals.wav demucs created
     song_name  = os.path.splitext(os.path.basename(input_path))[0]
     vocals_wav = os.path.join(TEMP_DIR, DEMUCS_MODEL, song_name, f"{STEM_TYPE}.wav")
 
@@ -49,7 +47,6 @@ def extract_vocals(input_path, output_path):
         print(f"Error: vocals file not found at {vocals_wav}")
         sys.exit(1)
 
-    # Step 3 — convert vocals.wav to mp4 (black background video)
     print(f"Converting vocals to {output_path}...")
     subprocess.run([
         "ffmpeg", "-y",

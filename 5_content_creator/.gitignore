@@ -1,0 +1,14 @@
+# Virtual environment
+venv310/
+
+# Generated subtitle files
+*.ass
+*.srt
+
+# Generated video/audio files
+*.mp4
+*.mp3
+*.wav
+
+# Logs
+*.log

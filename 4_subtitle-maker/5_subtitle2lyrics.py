@@ -53,8 +53,6 @@ def convert(input_path, output_path):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     with open(output_path, "w", encoding="utf-8") as f:
-        f.write(entries[0]["timestamp"] + "\n")
-
         for i, e in enumerate(entries):
             f.write(e["text"] + "\n")
             if i < len(entries) - 1:
@@ -62,13 +60,11 @@ def convert(input_path, output_path):
                 if gap > GAP_THRESHOLD:
                     f.write("\n")
 
-        f.write(entries[-1]["timestamp"] + "\n")
-
     print(f"Saved {len(entries)} lines → {output_path}")
 
 
 if __name__ == "__main__":
     _cfg = load_config()
-    DEFAULT_INPUT  = _cfg["filelocation.elevenlab2sub"] + _cfg["prefix.elevenlab2sub"] + "." + _cfg["extention.elevenlab2sub.file"]
+    DEFAULT_INPUT  = _cfg["filelocation.elevenlab2sub"] + _cfg["prefix.elevenlab2sub"] + "." + _cfg["extention.elevenlab2sub"]
     DEFAULT_OUTPUT = _cfg["filelocation.lyrics"]        + _cfg["prefix.lyrics"]        + "." + _cfg["extention.lyrics"]
     convert(DEFAULT_INPUT, DEFAULT_OUTPUT)

@@ -1,8 +1,8 @@
-import re
 import subprocess
 import os
 import sys
 import configparser
+
 
 def load_config(config_path="../5_content_creator/config.properties"):
     config = configparser.ConfigParser()
@@ -12,10 +12,10 @@ def load_config(config_path="../5_content_creator/config.properties"):
 
 _cfg = load_config()
 
-DEFAULT_INPUT_MP4  = _cfg["filelocation.ready4sub"] + _cfg["prefix.ready4sub"] + _cfg["filename.original"] + "." + _cfg["extention.ready4sub.file"]
+DEFAULT_INPUT_MP4  = _cfg["filelocation.ready4sub"] + _cfg["prefix.ready4sub"] + _cfg["filename.original"] + "." + _cfg["extention.ready4sub"]
 DEFAULT_LYRICS_TXT = _cfg["filelocation.lyrics"]    + _cfg["prefix.lyrics"]    + "." + _cfg["extention.lyrics"]
 DEFAULT_OUTPUT_MP4 = _cfg["filelocation.ready2up"]  + _cfg["prefix.ready2up"]  + _cfg["filename.original"] + "." + _cfg["extention.ready2up"]
-DEFAULT_OUTPUT_ASS = "scroll.ass"
+DEFAULT_OUTPUT_ASS = "scroll31.ass"
 
 # Video
 VIDEO_CODEC   = "libx264"
@@ -33,64 +33,47 @@ ITALIC        = "-1"
 OUTLINE_WIDTH = "2"
 
 # Scroll layout
-PLAY_RES_X         = 1280
-PLAY_RES_Y         = 720
-LINE_HEIGHT        = 80    # approx pixel height per line at FONT_SIZE 60
-SCROLL_SPEED_FACTOR = 0.6  # < 1.0 = slower, > 1.0 = faster
+PLAY_RES_X  = 1280
+PLAY_RES_Y  = 720
+LINE_HEIGHT = 80   # approx pixel height per line at FONT_SIZE 60
 
 
-TIMESTAMP_RE = re.compile(
-    r"(\d{2}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2},\d{3})"
-)
-
-
-def srt_time_to_seconds(t):
-    h, m, s_ms = t.split(":")
-    s, ms = s_ms.split(",")
-    return int(h) * 3600 + int(m) * 60 + int(s) + int(ms) / 1000
+def get_duration(input_path):
+    result = subprocess.run([
+        "ffprobe", "-v", "error",
+        "-show_entries", "format=duration",
+        "-of", "default=noprint_wrappers=1:nokey=1",
+        input_path,
+    ], capture_output=True, text=True, check=True)
+    return float(result.stdout.strip())
 
 
 def parse_lyrics(lyrics_path):
     with open(lyrics_path, "r", encoding="utf-8-sig") as f:
         raw = f.read().replace("\r\n", "\n").replace("\r", "\n")
-
-    start_time = None
-    end_time   = None
-    lines      = []
-
-    for line in raw.splitlines():
-        line = line.strip()
-        m = TIMESTAMP_RE.match(line)
-        if m:
-            t = srt_time_to_seconds(m.group(1))
-            if start_time is None:
-                start_time = t
-            else:
-                end_time = t
-            continue
-        if line:
-            lines.append(line)
-
-    return lines, start_time, end_time
+    return [line.strip() for line in raw.splitlines() if line.strip()]
 
 
 def fmt_ass_time(t):
+    t  = max(0.0, t)
     h  = int(t // 3600)
     m  = int((t % 3600) // 60)
     s  = int(t % 60)
-    cs = int((t - int(t)) * 100)
+    cs = int(round((t - int(t)) * 100))
     return f"{h}:{m:02}:{s:02}.{cs:02}"
 
 
-def write_scroll_ass(lines, ass_path, start_time, end_time):
-    n         = len(lines)
-    available = end_time - start_time
+def write_scroll_ass(lines, ass_path, total_duration):
+    n             = len(lines)
+    time_per_line = total_duration / n
+    speed         = LINE_HEIGHT / time_per_line   # pixels per second
 
-    # Speed chosen so all lines scroll continuously across available time
-    # Total scroll distance = screen height + all lines stacked
-    speed         = (PLAY_RES_Y + n * LINE_HEIGHT) / available * SCROLL_SPEED_FACTOR
-    traverse_time = (PLAY_RES_Y + LINE_HEIGHT) / speed
-    spacing       = LINE_HEIGHT / speed
+    # Half the screen height + one line buffer for enter/exit travel
+    half_traverse = (PLAY_RES_Y / 2 + LINE_HEIGHT) / speed
+
+    cx             = PLAY_RES_X // 2
+    y_enter_screen = PLAY_RES_Y + LINE_HEIGHT   # below screen
+    y_exit_screen  = -LINE_HEIGHT               # above screen
 
     header = (
         "[Script Info]\n"
@@ -112,19 +95,26 @@ def write_scroll_ass(lines, ass_path, start_time, end_time):
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n"
     )
 
-    cx      = PLAY_RES_X // 2
-    start_y = PLAY_RES_Y + LINE_HEIGHT // 2   # enters from below screen
-    end_y   = -(LINE_HEIGHT // 2)             # exits above screen
-
     with open(ass_path, "w", encoding="utf-8") as f:
         f.write(header)
         for i, line in enumerate(lines):
-            t_start  = start_time + (i - 2) * spacing
-            t_end    = t_start + traverse_time
-            move_tag = f"{{\\move({cx},{start_y},{cx},{end_y})}}"
+            # Line i is at screen center at the midpoint of its time slot
+            t_center = (i + 0.5) * time_per_line
+            t_enter  = t_center - half_traverse
+            t_exit   = t_center + half_traverse
+
+            if t_enter < 0:
+                # Line is already on screen at t=0; calculate its y position at t=0
+                y1 = y_enter_screen + t_enter * speed  # t_enter < 0, so y1 < y_enter_screen
+                t1 = 0.0
+            else:
+                y1 = y_enter_screen
+                t1 = t_enter
+
+            move_tag = f"{{\\move({cx},{int(y1)},{cx},{int(y_exit_screen)})}}"
             f.write(
-                f"Dialogue: 0,{fmt_ass_time(t_start)},"
-                f"{fmt_ass_time(t_end)},Default,,0,0,0,,{move_tag}{line}\n"
+                f"Dialogue: 0,{fmt_ass_time(t1)},"
+                f"{fmt_ass_time(t_exit)},Default,,0,0,0,,{move_tag}{line}\n"
             )
 
 
@@ -144,17 +134,22 @@ def make_video(input_mp4, ass_path, output_path):
 
 
 def main():
-    print(f"Parsing {DEFAULT_LYRICS_TXT}...")
-    lines, start_time, end_time = parse_lyrics(DEFAULT_LYRICS_TXT)
-    print(f"  {len(lines)} lyric lines loaded")
-    print(f"  Time range: {start_time:.1f}s → {end_time:.1f}s")
+    for path in (DEFAULT_INPUT_MP4, DEFAULT_LYRICS_TXT):
+        if not os.path.exists(path):
+            print(f"Error: file not found: {path}")
+            sys.exit(1)
 
-    if start_time is None or end_time is None:
-        print("Error: could not find start/end timestamps in lyrics file")
-        sys.exit(1)
+    print(f"Parsing {DEFAULT_LYRICS_TXT}...")
+    lines = parse_lyrics(DEFAULT_LYRICS_TXT)
+    print(f"  {len(lines)} lyric lines loaded")
+
+    print(f"Getting duration of {DEFAULT_INPUT_MP4}...")
+    duration = get_duration(DEFAULT_INPUT_MP4)
+    print(f"  Duration      : {duration:.1f}s")
+    print(f"  Time per line : {duration / len(lines):.2f}s")
 
     print(f"Writing {DEFAULT_OUTPUT_ASS}...")
-    write_scroll_ass(lines, DEFAULT_OUTPUT_ASS, start_time, end_time)
+    write_scroll_ass(lines, DEFAULT_OUTPUT_ASS, duration)
 
     print(f"Generating {DEFAULT_OUTPUT_MP4}...")
     make_video(DEFAULT_INPUT_MP4, DEFAULT_OUTPUT_ASS, DEFAULT_OUTPUT_MP4)
