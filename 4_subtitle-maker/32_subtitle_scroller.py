@@ -12,16 +12,17 @@ def load_config(config_path="../5_content_creator/config.properties"):
 
 _cfg = load_config()
 
-DEFAULT_INPUT_MP4  = _cfg["filelocation.ready4sub"] + _cfg["prefix.ready4sub"] + "." + _cfg["extention.ready4sub"]
-DEFAULT_LYRICS_TXT = _cfg["filelocation.lyrics"]    + _cfg["prefix.lyrics"]    + "." + _cfg["extention.lyrics"]
-DEFAULT_OUTPUT_MP4 = _cfg["filelocation.ready2up"]  + _cfg["prefix.ready2up"]  + _cfg["filename.original"] + "." + _cfg["extention.ready2up"]
-DEFAULT_OUTPUT_ASS = "scroll31.ass"
+DEFAULT_INPUT_WAV  = _cfg["filelocation.before_sub"] + _cfg["prefix.before_sub"] + "." + _cfg["extention.before_sub"]
+DEFAULT_LYRICS_TXT = _cfg["filelocation.lyrics"]     + _cfg["prefix.lyrics"]     + "." + _cfg["extention.lyrics"]
+DEFAULT_OUTPUT_MP4 = _cfg["filelocation.ready2up"]   + _cfg["prefix.ready2up"]   + _cfg["filename.original"] + "." + _cfg["extention.ready2up"]
+DEFAULT_OUTPUT_ASS = "scroll32.ass"
 
 # Video
 VIDEO_CODEC   = "libx264"
 VIDEO_CRF     = "23"        # higher = smaller file; 18=sharp text, 23=default, 28=blurry text
 AUDIO_CODEC   = "aac"
 AUDIO_BITRATE = "192k"
+FRAME_RATE    = "30"
 
 # Subtitle style
 FONT_NAME     = "Noto Sans Bengali"
@@ -69,7 +70,6 @@ def write_scroll_ass(lines, ass_path, total_duration):
     time_per_line = total_duration / n
     speed         = LINE_HEIGHT / time_per_line   # pixels per second
 
-    # Half the screen height + one line buffer for enter/exit travel
     half_traverse = (PLAY_RES_Y / 2 + LINE_HEIGHT) / speed
 
     cx             = PLAY_RES_X // 2
@@ -99,14 +99,12 @@ def write_scroll_ass(lines, ass_path, total_duration):
     with open(ass_path, "w", encoding="utf-8") as f:
         f.write(header)
         for i, line in enumerate(lines):
-            # Line i is at screen center at the midpoint of its time slot
             t_center = (i + 0.5) * time_per_line
             t_enter  = t_center - half_traverse
             t_exit   = t_center + half_traverse
 
             if t_enter < 0:
-                # Line is already on screen at t=0; calculate its y position at t=0
-                y1 = y_enter_screen + t_enter * speed  # t_enter < 0, so y1 < y_enter_screen
+                y1 = y_enter_screen + t_enter * speed
                 t1 = 0.0
             else:
                 y1 = y_enter_screen
@@ -119,11 +117,14 @@ def write_scroll_ass(lines, ass_path, total_duration):
             )
 
 
-def make_video(input_mp4, ass_path, output_path):
+def make_video(input_wav, ass_path, output_path):
     abs_ass = os.path.abspath(ass_path).replace("\\", "/").replace(":", "\\:")
     cmd = [
         "ffmpeg", "-y",
-        "-i", os.path.abspath(input_mp4),
+        "-f", "lavfi",
+        "-i", f"color=c=black:s={PLAY_RES_X}x{PLAY_RES_Y}:r={FRAME_RATE}",
+        "-i", os.path.abspath(input_wav),
+        "-shortest",
         "-vf", f"ass={abs_ass}",
         "-c:v", VIDEO_CODEC,
         "-crf", VIDEO_CRF,
@@ -136,7 +137,7 @@ def make_video(input_mp4, ass_path, output_path):
 
 
 def main():
-    for path in (DEFAULT_INPUT_MP4, DEFAULT_LYRICS_TXT):
+    for path in (DEFAULT_INPUT_WAV, DEFAULT_LYRICS_TXT):
         if not os.path.exists(path):
             print(f"Error: file not found: {path}")
             sys.exit(1)
@@ -145,8 +146,8 @@ def main():
     lines = parse_lyrics(DEFAULT_LYRICS_TXT)
     print(f"  {len(lines)} lyric lines loaded")
 
-    print(f"Getting duration of {DEFAULT_INPUT_MP4}...")
-    duration = get_duration(DEFAULT_INPUT_MP4)
+    print(f"Getting duration of {DEFAULT_INPUT_WAV}...")
+    duration = get_duration(DEFAULT_INPUT_WAV)
     print(f"  Duration      : {duration:.1f}s")
     print(f"  Time per line : {duration / len(lines):.2f}s")
 
@@ -154,7 +155,7 @@ def main():
     write_scroll_ass(lines, DEFAULT_OUTPUT_ASS, duration)
 
     print(f"Generating {DEFAULT_OUTPUT_MP4}...")
-    make_video(DEFAULT_INPUT_MP4, DEFAULT_OUTPUT_ASS, DEFAULT_OUTPUT_MP4)
+    make_video(DEFAULT_INPUT_WAV, DEFAULT_OUTPUT_ASS, DEFAULT_OUTPUT_MP4)
 
 
 if __name__ == "__main__":
