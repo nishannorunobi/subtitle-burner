@@ -1,0 +1,14 @@
+services:
+  study:
+    build: .
+    image: python-study-project
+    container_name: python-study
+    working_dir: /workspace/5_content_creator
+    volumes:
+      - .:/workspace                        # all project code (live-editable)
+      - whisper-cache:/root/.cache/whisper  # persist ~1.5GB whisper model
+    stdin_open: true
+    tty: true
+
+volumes:
+  whisper-cache:
