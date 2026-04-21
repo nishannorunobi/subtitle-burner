@@ -10,5 +10,4 @@ else
     source venv310/bin/activate
 fi
 
-python 4_mp42wav.py
 

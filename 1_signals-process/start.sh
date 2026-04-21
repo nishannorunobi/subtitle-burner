@@ -10,5 +10,4 @@ else
     source venv310/bin/activate
 fi
 
-python 1d_wav_get_human.py
 
