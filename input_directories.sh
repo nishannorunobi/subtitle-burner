@@ -1,7 +1,7 @@
 
 #!/bin/bash
 
-BASE="/mydockerspace/git-ignore-resources/"
+BASE="/myworkspace/mountspace/"
 
 mkdir -p "$BASE/1_input_files"
 mkdir -p "$BASE/2_generated_files"
