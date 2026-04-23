@@ -1,7 +1,7 @@
 import subprocess
 import os
 import sys
-import configparser
+from pathlib import Path
 
 # Strategy: Demucs 4-stem separates vocals from other instruments (flute → "other" stem).
 # Final mix = vocals (100%) + other (FLUTE_VOLUME) so voice is intact, flute is quiet.
@@ -11,11 +11,11 @@ TEMP_DIR      = "../git-ignore-files/demucs_temp"
 FLUTE_VOLUME  = 0.15   # 0.0 = silent, 1.0 = original — tune this to taste
 
 
-def load_config(config_path="../5_content_creator/config.properties"):
-    config = configparser.ConfigParser()
-    with open(config_path) as f:
-        config.read_string("[DEFAULT]\n" + f.read())
-    return config["DEFAULT"]
+CONFIG_DIR = Path(__file__).resolve().parents[1] / "5_content_creator"
+if str(CONFIG_DIR) not in sys.path:
+    sys.path.insert(0, str(CONFIG_DIR))
+
+from config import PROCESSING_FILE_PATH, VOCALS_FILE_PATH  # type: ignore
 
 
 def run_demucs_4stem(input_path):
@@ -66,7 +66,6 @@ def extract_human_voice(input_path, output_path):
 
 
 if __name__ == "__main__":
-    _cfg = load_config()
-    DEFAULT_INPUT  = _cfg["filelocation.processing"] + _cfg["filename.processing"] + "." + _cfg["extention.processing"]
-    DEFAULT_OUTPUT = _cfg["filelocation.vocals"]     + _cfg["prefix.vocals"]       + "." + _cfg["extention.vocals"]
+    DEFAULT_INPUT = PROCESSING_FILE_PATH
+    DEFAULT_OUTPUT = VOCALS_FILE_PATH
     extract_human_voice(DEFAULT_INPUT, DEFAULT_OUTPUT)

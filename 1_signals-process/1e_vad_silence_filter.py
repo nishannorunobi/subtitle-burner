@@ -1,7 +1,7 @@
 import subprocess
 import os
 import sys
-import configparser
+from pathlib import Path
 import torch
 import torchaudio
 
@@ -16,11 +16,11 @@ SPEECH_PAD_MS   = 300
 VAD_SAMPLE_RATE = 16000
 
 
-def load_config(config_path="../5_content_creator/config.properties"):
-    config = configparser.ConfigParser()
-    with open(config_path) as f:
-        config.read_string("[DEFAULT]\n" + f.read())
-    return config["DEFAULT"]
+CONFIG_DIR = Path(__file__).resolve().parents[1] / "5_content_creator"
+if str(CONFIG_DIR) not in sys.path:
+    sys.path.insert(0, str(CONFIG_DIR))
+
+from config import VOCALS_FILE_PATH, BEFORE_SUB_FILE_PATH  # type: ignore
 
 
 def load_vad_model():
@@ -105,7 +105,6 @@ def silence_non_speech(input_path, output_path):
 
 
 if __name__ == "__main__":
-    _cfg = load_config()
-    DEFAULT_INPUT  = _cfg["filelocation.vocals"]     + _cfg["prefix.vocals"]     + "." + _cfg["extention.vocals"]
-    DEFAULT_OUTPUT = _cfg["filelocation.before_sub"] + _cfg["prefix.before_sub"] + "." + _cfg["extention.before_sub"]
+    DEFAULT_INPUT = VOCALS_FILE_PATH
+    DEFAULT_OUTPUT = BEFORE_SUB_FILE_PATH
     silence_non_speech(DEFAULT_INPUT, DEFAULT_OUTPUT)

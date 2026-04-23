@@ -1,18 +1,16 @@
 import subprocess
 import os
 import sys
-import configparser
+from pathlib import Path
 
-def load_config(config_path="../5_content_creator/config.properties"):
-    config = configparser.ConfigParser()
-    with open(config_path) as f:
-        config.read_string("[DEFAULT]\n" + f.read())
-    return config["DEFAULT"]
+CONFIG_DIR = Path(__file__).resolve().parents[1] / "5_content_creator"
+if str(CONFIG_DIR) not in sys.path:
+    sys.path.insert(0, str(CONFIG_DIR))
 
-_cfg = load_config()
+from config import PROCESSING_FILE_PATH, VOCALS_FILE_PATH  # type: ignore
 
-DEFAULT_INPUT  = _cfg["filelocation.processing"] + _cfg["filename.processing"] + "." + _cfg["extention.processing"]
-DEFAULT_OUTPUT = _cfg["filelocation.vocals"] + _cfg["prefix.vocals"] + "." + _cfg["extention.vocals"]
+DEFAULT_INPUT = PROCESSING_FILE_PATH
+DEFAULT_OUTPUT = VOCALS_FILE_PATH
 DEMUCS_MODEL     = "htdemucs"
 STEM_TYPE        = "vocals"
 TEMP_DIR         = "../git-ignore-files/demucs_temp"
