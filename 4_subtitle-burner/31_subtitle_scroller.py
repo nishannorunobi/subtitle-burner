@@ -1,20 +1,18 @@
 import subprocess
 import os
 import sys
-import configparser
+from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+CONFIG_DIR = PROJECT_ROOT / "5_content_creator"
+if str(CONFIG_DIR) not in sys.path:
+    sys.path.insert(0, str(CONFIG_DIR))
 
-def load_config(config_path="../5_content_creator/config.properties"):
-    config = configparser.ConfigParser()
-    with open(config_path) as f:
-        config.read_string("[DEFAULT]\n" + f.read())
-    return config["DEFAULT"]
+from config import READY4SUB_FILE_PATH, LYRICS_FILE_PATH, READY2UP_FILE_PATH
 
-_cfg = load_config()
-
-DEFAULT_INPUT_MP4  = _cfg["filelocation.ready4sub"] + _cfg["prefix.ready4sub"] + "." + _cfg["extention.ready4sub"]
-DEFAULT_LYRICS_TXT = _cfg["filelocation.lyrics"]    + _cfg["prefix.lyrics"]    + "." + _cfg["extention.lyrics"]
-DEFAULT_OUTPUT_MP4 = _cfg["filelocation.ready2up"]  + _cfg["prefix.ready2up"]  + _cfg["filename.original"] + "." + _cfg["extention.ready2up"]
+DEFAULT_INPUT_MP4 = READY4SUB_FILE_PATH
+DEFAULT_LYRICS_TXT = LYRICS_FILE_PATH
+DEFAULT_OUTPUT_MP4 = READY2UP_FILE_PATH
 DEFAULT_OUTPUT_ASS = "scroll31.ass"
 
 # Video

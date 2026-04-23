@@ -54,65 +54,65 @@ for _k, _v in _CONFIG.items():
 MOUNT_PATH = _CONFIG.get("mount.path", "")
 FILELOCATION_ORIGINAL = _CONFIG.get("filelocation.original", "")
 FILENAME_ORIGINAL = _CONFIG.get("filename.original", "")
-EXTENTION_ORIGINAL = _CONFIG.get("extention.original", "")
+EXTENTION_ORIGINAL = "."+_CONFIG.get("extention.original", "")
 
 ORIGINAL_FILE_PATH = MOUNT_PATH + FILELOCATION_ORIGINAL + FILENAME_ORIGINAL + EXTENTION_ORIGINAL
 
 FILELOCATION_PROCESSING = _CONFIG.get("filelocation.processing", "")
 FILENAME_PROCESSING = _CONFIG.get("filename.processing", "")
-EXTENTION_PROCESSING = _CONFIG.get("extention.processing", "")
+EXTENTION_PROCESSING = "."+_CONFIG.get("extention.processing", "")
 PROCESSING_FILE_PATH = (
     MOUNT_PATH + FILELOCATION_PROCESSING + FILENAME_PROCESSING + EXTENTION_PROCESSING
 )
 
 FILELOCATION_VOCALS = _CONFIG.get("filelocation.vocals", "")
 PREFIX_VOCALS = _CONFIG.get("prefix.vocals", "")
-EXTENTION_VOCALS = _CONFIG.get("extention.vocals", "")
+EXTENTION_VOCALS = "."+_CONFIG.get("extention.vocals", "")
 VOCALS_FILE_PATH = MOUNT_PATH + FILELOCATION_VOCALS + PREFIX_VOCALS + EXTENTION_VOCALS
 
 FILELOCATION_VOCALS_VAD = _CONFIG.get("filelocation.vocals.vad", "")
 PREFIX_VOCALS_VAD = _CONFIG.get("prefix.vocals.vad", "")
-EXTENTION_VOCALS_VAD = _CONFIG.get("extention.vocals.vad", "")
+EXTENTION_VOCALS_VAD = "."+_CONFIG.get("extention.vocals.vad", "")
 VOCALS_VAD_FILE_PATH = (
     MOUNT_PATH + FILELOCATION_VOCALS_VAD + PREFIX_VOCALS_VAD + EXTENTION_VOCALS_VAD
 )
 
 FILELOCATION_BEFORE_SUB = _CONFIG.get("filelocation.before_sub", "")
 PREFIX_BEFORE_SUB = _CONFIG.get("prefix.before_sub", "")
-EXTENTION_BEFORE_SUB = _CONFIG.get("extention.before_sub", "")
+EXTENTION_BEFORE_SUB = "."+_CONFIG.get("extention.before_sub", "")
 BEFORE_SUB_FILE_PATH = (
     MOUNT_PATH + FILELOCATION_BEFORE_SUB + PREFIX_BEFORE_SUB + EXTENTION_BEFORE_SUB
 )
 
 FILELOCATION_READY4SUB = _CONFIG.get("filelocation.ready4sub", "")
 PREFIX_READY4SUB = _CONFIG.get("prefix.ready4sub", "")
-EXTENTION_READY4SUB = _CONFIG.get("extention.ready4sub", "")
+EXTENTION_READY4SUB = "."+_CONFIG.get("extention.ready4sub", "")
 READY4SUB_FILE_PATH = (
     MOUNT_PATH + FILELOCATION_READY4SUB + PREFIX_READY4SUB + EXTENTION_READY4SUB
 )
 
 FILELOCATION_ELEVENLAB = _CONFIG.get("filelocation.elevenlab", "")
 PREFIX_ELEVENLAB = _CONFIG.get("prefix.elevenlab", "")
-EXTENTION_ELEVENLAB = _CONFIG.get("extention.elevenlab", "")
+EXTENTION_ELEVENLAB = "."+_CONFIG.get("extention.elevenlab", "")
 ELEVENLAB_FILE_PATH = (
     MOUNT_PATH + FILELOCATION_ELEVENLAB + PREFIX_ELEVENLAB + EXTENTION_ELEVENLAB
 )
 
 FILELOCATION_ELEVENLAB2SUB = _CONFIG.get("filelocation.elevenlab2sub", "")
 PREFIX_ELEVENLAB2SUB = _CONFIG.get("prefix.elevenlab2sub", "")
-EXTENTION_ELEVENLAB2SUB = _CONFIG.get("extention.elevenlab2sub", "")
+EXTENTION_ELEVENLAB2SUB = "."+_CONFIG.get("extention.elevenlab2sub", "")
 ELEVENLAB2SUB_FILE_PATH = (
     MOUNT_PATH + FILELOCATION_ELEVENLAB2SUB + PREFIX_ELEVENLAB2SUB + EXTENTION_ELEVENLAB2SUB
 )
 
 FILELOCATION_LYRICS = _CONFIG.get("filelocation.lyrics", "")
 PREFIX_LYRICS = _CONFIG.get("prefix.lyrics", "")
-EXTENTION_LYRICS = _CONFIG.get("extention.lyrics", "")
+EXTENTION_LYRICS = "."+_CONFIG.get("extention.lyrics", "")
 LYRICS_FILE_PATH = MOUNT_PATH + FILELOCATION_LYRICS + PREFIX_LYRICS + EXTENTION_LYRICS
 
 FILELOCATION_READY2UP = _CONFIG.get("filelocation.ready2up", "")
 PREFIX_READY2UP = _CONFIG.get("prefix.ready2up", "")
-EXTENTION_READY2UP = _CONFIG.get("extention.ready2up", "")
+EXTENTION_READY2UP = "."+_CONFIG.get("extention.ready2up", "")
 READY2UP_FILE_PATH = (
     MOUNT_PATH + FILELOCATION_READY2UP + PREFIX_READY2UP + EXTENTION_READY2UP
 )

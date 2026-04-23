@@ -1,31 +1,18 @@
 import sys
 import os
-import configparser
+from pathlib import Path
 import whisper
 
 
-def load_config(config_path="../5_content_creator/config.properties"):
-    config = configparser.ConfigParser()
-    with open(config_path) as f:
-        config.read_string("[DEFAULT]\n" + f.read())
-    return config["DEFAULT"]
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+CONFIG_DIR = PROJECT_ROOT / "5_content_creator"
+if str(CONFIG_DIR) not in sys.path:
+    sys.path.insert(0, str(CONFIG_DIR))
 
+from config import BEFORE_SUB_FILE_PATH, LYRICS_FILE_PATH
 
-_cfg = load_config()
-
-DEFAULT_INPUT_WAV = (
-    _cfg["filelocation.before_sub"]
-    + _cfg["prefix.before_sub"]
-    + "."
-    + _cfg["extention.before_sub"]
-)
-
-OUTPUT_LYRICS = (
-    _cfg["filelocation.lyrics"]
-    + _cfg["prefix.lyrics"]
-    + "."
-    + _cfg["extention.lyrics"]
-)
+DEFAULT_INPUT_WAV = BEFORE_SUB_FILE_PATH
+OUTPUT_LYRICS = LYRICS_FILE_PATH
 
 # large-v3 = best quality, ~1.5 GB, downloads once to ~/.cache/whisper/
 MODEL_NAME = "large-v3"

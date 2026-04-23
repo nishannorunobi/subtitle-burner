@@ -1,16 +1,17 @@
 import json
 import os
 import sys
-import configparser
+from pathlib import Path
 
 SENTENCE_ENDINGS = {"।", "।"}
 
 
-def load_config(config_path="../5_content_creator/config.properties"):
-    config = configparser.ConfigParser()
-    with open(config_path) as f:
-        config.read_string("[DEFAULT]\n" + f.read())
-    return config["DEFAULT"]
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+CONFIG_DIR = PROJECT_ROOT / "5_content_creator"
+if str(CONFIG_DIR) not in sys.path:
+    sys.path.insert(0, str(CONFIG_DIR))
+
+from config import ELEVENLAB_FILE_PATH, ELEVENLAB2SUB_FILE_PATH
 
 
 def ms_to_srt_time(seconds):
@@ -77,7 +78,6 @@ def convert(input_path, output_path):
 
 
 if __name__ == "__main__":
-    _cfg = load_config()
-    DEFAULT_INPUT  = _cfg["filelocation.elevenlab"] + _cfg["prefix.elevenlab"] + "." + _cfg["extention.elevenlab"]
-    DEFAULT_OUTPUT = _cfg["filelocation.elevenlab2sub"] + _cfg["prefix.elevenlab2sub"] + "." + _cfg["extention.elevenlab2sub"]
+    DEFAULT_INPUT = ELEVENLAB_FILE_PATH
+    DEFAULT_OUTPUT = ELEVENLAB2SUB_FILE_PATH
     convert(DEFAULT_INPUT, DEFAULT_OUTPUT)

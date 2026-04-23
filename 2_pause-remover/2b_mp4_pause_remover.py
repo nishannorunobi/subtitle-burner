@@ -3,18 +3,17 @@ import tempfile
 import re
 import os
 import sys
-import configparser
+from pathlib import Path
 
-def load_config(config_path="../5_content_creator/config.properties"):
-    config = configparser.ConfigParser()
-    with open(config_path) as f:
-        config.read_string("[DEFAULT]\n" + f.read())
-    return config["DEFAULT"]
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+CONFIG_DIR = PROJECT_ROOT / "5_content_creator"
+if str(CONFIG_DIR) not in sys.path:
+    sys.path.insert(0, str(CONFIG_DIR))
 
-_cfg = load_config()
+from config import VOCALS_FILE_PATH, READY4SUB_FILE_PATH
 
-DEFAULT_INPUT  = _cfg["filelocation.vocals"] + _cfg["prefix.vocals"] + _cfg["filename.original"] + "." + _cfg["extention.vocals"]
-DEFAULT_OUTPUT = _cfg["filelocation.ready4sub"] + _cfg["prefix.ready4sub"] + _cfg["filename.original"] + "." + _cfg["extention.ready4sub"]
+DEFAULT_INPUT = VOCALS_FILE_PATH
+DEFAULT_OUTPUT = READY4SUB_FILE_PATH
 MAX_PAUSE_SEC      = 3.0        # remove pauses longer than this (seconds)
 SILENCE_THRESH_DB  = -40        # volume below which is considered silence
 VIDEO_CODEC        = "libx264"

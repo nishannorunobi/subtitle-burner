@@ -6,5 +6,6 @@ apt install -y software-properties-common
 add-apt-repository -y ppa:deadsnakes/ppa
 apt update
 apt install -y python3.10 python3.10-venv python3.10-distutils python3-pip
+ln -sf /usr/bin/python3 /usr/local/bin/python
 apt install -y ffmpeg fonts-noto
 

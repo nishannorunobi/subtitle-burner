@@ -1,7 +1,7 @@
 import subprocess
 import os
 import sys
-import configparser
+from pathlib import Path
 
 VIDEO_RESOLUTION = "320x240"
 VIDEO_FPS        = "1"        # 1fps is enough for a static black frame
@@ -13,11 +13,12 @@ AUDIO_CODEC      = "aac"
 AUDIO_BITRATE    = "128k"     # 128k is enough for voice
 
 
-def load_config(config_path="../5_content_creator/config.properties"):
-    config = configparser.ConfigParser()
-    with open(config_path) as f:
-        config.read_string("[DEFAULT]\n" + f.read())
-    return config["DEFAULT"]
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+CONFIG_DIR = PROJECT_ROOT / "5_content_creator"
+if str(CONFIG_DIR) not in sys.path:
+    sys.path.insert(0, str(CONFIG_DIR))
+
+from config import BEFORE_SUB_FILE_PATH, READY4SUB_FILE_PATH
 
 
 def wav_to_mp4(input_path, output_path):
@@ -52,7 +53,6 @@ def wav_to_mp4(input_path, output_path):
 
 
 if __name__ == "__main__":
-    _cfg = load_config()
-    DEFAULT_INPUT  = _cfg["filelocation.before_sub"] + _cfg["prefix.before_sub"] + "." + _cfg["extention.before_sub"]
-    DEFAULT_OUTPUT = _cfg["filelocation.ready4sub"]  + _cfg["prefix.ready4sub"]  + "." + _cfg["extention.ready4sub"]
+    DEFAULT_INPUT = BEFORE_SUB_FILE_PATH
+    DEFAULT_OUTPUT = READY4SUB_FILE_PATH
     wav_to_mp4(DEFAULT_INPUT, DEFAULT_OUTPUT)

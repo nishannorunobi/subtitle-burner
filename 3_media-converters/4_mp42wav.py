@@ -1,14 +1,14 @@
 import subprocess
 import os
 import sys
-import configparser
+from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+CONFIG_DIR = PROJECT_ROOT / "5_content_creator"
+if str(CONFIG_DIR) not in sys.path:
+    sys.path.insert(0, str(CONFIG_DIR))
 
-def load_config(config_path="../5_content_creator/config.properties"):
-    config = configparser.ConfigParser()
-    with open(config_path) as f:
-        config.read_string("[DEFAULT]\n" + f.read())
-    return config["DEFAULT"]
+from config import ORIGINAL_FILE_PATH, PROCESSING_FILE_PATH
 
 
 def convert(input_path, output_path):
@@ -32,7 +32,6 @@ def convert(input_path, output_path):
 
 
 if __name__ == "__main__":
-    _cfg = load_config()
-    DEFAULT_INPUT  = _cfg["filelocation.original"]   + _cfg["filename.original"]   + "." + _cfg["extention.original"]
-    DEFAULT_OUTPUT = _cfg["filelocation.processing"] + _cfg["filename.processing"] + "." + _cfg["extention.processing"]
+    DEFAULT_INPUT = ORIGINAL_FILE_PATH
+    DEFAULT_OUTPUT = PROCESSING_FILE_PATH
     convert(DEFAULT_INPUT, DEFAULT_OUTPUT)

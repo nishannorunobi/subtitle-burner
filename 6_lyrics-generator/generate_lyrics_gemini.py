@@ -1,27 +1,19 @@
 import sys
 import os
-import configparser
+from pathlib import Path
 from google import genai
 from google.genai import types
 
 
-def load_config(config_path="../5_content_creator/config.properties"):
-    config = configparser.ConfigParser()
-    with open(config_path) as f:
-        config.read_string("[DEFAULT]\n" + f.read())
-    return config["DEFAULT"]
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+CONFIG_DIR = PROJECT_ROOT / "5_content_creator"
+if str(CONFIG_DIR) not in sys.path:
+    sys.path.insert(0, str(CONFIG_DIR))
 
+from config import LYRICS_FILE_PATH, CONFIG
 
-_cfg = load_config()
-
-OUTPUT_LYRICS = (
-    _cfg["filelocation.lyrics"]
-    + _cfg["prefix.lyrics"]
-    + "."
-    + _cfg["extention.lyrics"]
-)
-
-DEFAULT_PROMPT = _cfg.get("api.gemini.prompt", "").strip()
+OUTPUT_LYRICS = LYRICS_FILE_PATH
+DEFAULT_PROMPT = CONFIG.get("api.gemini.prompt", "").strip()
 
 API_KEY = os.environ.get("GEMINI_API_KEY", "")
 

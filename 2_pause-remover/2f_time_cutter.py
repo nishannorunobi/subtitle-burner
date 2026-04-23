@@ -3,13 +3,14 @@ import tempfile
 import os
 import sys
 import configparser
+from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+CONFIG_DIR = PROJECT_ROOT / "5_content_creator"
+if str(CONFIG_DIR) not in sys.path:
+    sys.path.insert(0, str(CONFIG_DIR))
 
-def load_main_config(config_path="../5_content_creator/config.properties"):
-    config = configparser.ConfigParser()
-    with open(config_path) as f:
-        config.read_string("[DEFAULT]\n" + f.read())
-    return config["DEFAULT"]
+from config import VOCALS_FILE_PATH, BEFORE_SUB_FILE_PATH
 
 
 def load_local_config(config_path="config.properties"):
@@ -127,7 +128,6 @@ def apply_cuts(input_path, output_path, cuts):
 
 
 if __name__ == "__main__":
-    _main  = load_main_config()
     _local = load_local_config()
 
     cuts = load_cuts(_local)
@@ -135,7 +135,7 @@ if __name__ == "__main__":
         print("No cuts configured. Check config.properties.")
         sys.exit(0)
 
-    INPUT  = _main["filelocation.vocals"]     + _main["prefix.vocals"]     + "." + _main["extention.vocals"]
-    OUTPUT = _main["filelocation.before_sub"] + _main["prefix.before_sub"] + "." + _main["extention.before_sub"]
+    INPUT = VOCALS_FILE_PATH
+    OUTPUT = BEFORE_SUB_FILE_PATH
 
     apply_cuts(INPUT, OUTPUT, cuts)
