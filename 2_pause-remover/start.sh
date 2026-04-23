@@ -11,4 +11,3 @@ else
     source venv310/bin/activate
 fi
 
-python 1_wav-pause-remover.py

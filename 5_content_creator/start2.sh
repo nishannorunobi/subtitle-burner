@@ -14,4 +14,3 @@ python 2f_time_cutter.py
 
 source stop.sh
 cd ../5_content_creator
-
