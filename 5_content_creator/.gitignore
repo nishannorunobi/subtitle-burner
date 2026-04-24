@@ -1,6 +1,8 @@
 # Virtual environment
 venv310/
 
+__pycache__
+
 # Generated subtitle files
 *.ass
 *.srt
@@ -12,3 +14,4 @@ venv310/
 
 # Logs
 *.log
+cd
